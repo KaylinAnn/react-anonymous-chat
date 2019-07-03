@@ -3,6 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { CometChat } from '@cometchat-pro/chat';
+
+CometChat.init(process.env.REACT_APP_COMETCHAT_APPID)
+  .then(() => {
+    console.log("Initialized CometChat");
+  })
+  .catch(() => {
+    console.log('Failed to initialize CometChat');
+  })
+
+
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
