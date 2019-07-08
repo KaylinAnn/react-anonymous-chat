@@ -21,6 +21,73 @@ class Signup extends React.Component {
     }
   }
 
+  handleChange = e => {
+    if (e.target.name === 'uid') {
+      const uid = e.target.value
+      if (uid.indexOf(' ') > 0) {
+        this.setState({
+          UIDError: 'Username cannot contain whit space'
+        },
+          () => {
+            console.log(this.state.UIDError);
+          }
+        )
+      } else {
+        this.setState({ UIDError: null })
+      }
+    }
+    this.setState({ [e.target.name]: e.target.value })
+  }
+
+  handleSubmit = e => {
+    e.preventDefault()
+    const { uid, name, email } = this.state
+    this.setState({ uid: '', name: '', email: '', isLoading: true })
+    fetch('https://api.cometchat.com/v1/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        appid: process.env.REACT_APP_COMETCHAT_APPID,
+        apikey: process.env.REACT_APP_COMETCHAT_APIKEY
+      },
+      body: JSON.stringify({
+        uid,
+        name,
+        email
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        const error = data.error
+        if (error) {
+          this.setState({
+            isLoading: false,
+            errors: { ...error.details }
+          },
+            () => {
+              this.showErrors()
+            }
+          )
+          return
+        }
+        this.setState({
+          isLoading: false,
+          redirect: true
+        })
+      })
+  }
+
+  showErrors = () => {
+    const errors = this.state.errors
+    let errorMessages = []
+    if (errors !== null) {
+      for (const error in errors) {
+        errorMessages = [...errorMessages, ...errors[error]]
+      }
+    }
+    return errorMessages
+  }
+
   render() {
 
     if (this.state.redirect) return
