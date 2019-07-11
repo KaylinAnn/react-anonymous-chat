@@ -38,6 +38,70 @@ class Home extends React.Component {
       })
   }
 
+  render() {
+    if (this.state.redirect)
+      return (
+        <Redirect
+          to={{
+            pathname: '/chat',
+            user: this.state.user
+          }}
+        ></Redirect>
+      )
+    return (
+      <React.Fragment>
+        <Row
+          className='d-flex justify-content-center align-item-center w-100 mt-5'
+          style={{
+            minHeight: '100%'
+          }}
+        >
+          <Col xs={10} sm={10} md={4} lg={4} className='mx-auto mt-5'>
+            {this.state.error !== null && (
+              <Alert variant='danger'>{this.state.error}</Alert>
+            )}
+            <Form onSubmit={this.handleSubmit}>
+              <Form.Group controlId='username'>
+                <Form.Label>Username</Form.Label>
+                <Form.Control
+                  required
+                  type='text'
+                  value={this.state.username}
+                  placeholder='Enter Username'
+                  onChange={this.handleChange}
+                ></Form.Control>
+              </Form.Group>
+              <Button
+                disabled={this.state.isLoading}
+                variant='primary'
+                type='submit'
+                className='btn-block'
+              >
+                {this.state.isLoading ? (
+                  <>
+                    <Spinner
+                      as='span'
+                      animation='grow'
+                      size='sm'
+                      role='status'
+                      aria-hidden='true'
+                    ></Spinner>
+                    Loading...
+                  </>
+                ) : (
+                    <span>Login</span>
+                  )}
+              </Button>
+              <p className='pt-3'>
+                Don't have an account? <Link to='/signup'>Create One</Link>
+              </p>
+            </Form>
+          </Col>
+        </Row>
+      </React.Fragment>
+    )
+  }
+
 }
 
 export default Home;
