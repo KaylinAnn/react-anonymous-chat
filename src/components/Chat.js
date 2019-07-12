@@ -24,6 +24,123 @@ class Chat extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.setState({
+      user: this.props.location.user
+    })
+    this.getUser()
+    this.receiveMessages()
+  }
+
+  getUser = () => {
+    CometChat.getLoggedinUser().then(
+      user => {
+        this.joinGroup()
+      },
+      error => {
+        const authToken = localStorage.getItem('cometchat:authToken')
+        if (authToken !== null) {
+          this.setState({ authToken }, () => {
+            this.reAuthenticateUserWithToken(this.state.authToken)
+          })
+        } else {
+          this.setState({ redirect: true })
+        }
+      }
+    )
+  }
+
+  joinGroup = () => {
+    const GUID = this.state.receiverID
+    const password = ''
+    const groupType = CometChat.GROUP_TYPE.PUBLIC
+    CometChat.joinGroup(GUID, groupType, password).then(
+      group => { },
+      error => {
+        if (error.code === 'ERR_ALREADY_LOINED') {
+          this.reAuthenticateUserWithToken()
+        }
+      }
+    )
+  }
+
+  fetchMessages = () => {
+    const GUID = this.state.receiverID
+    const limit = 30
+    const messageRequest = new CometChat.MessagesRequestBuilder()
+      .setGUID(GUID)
+      .setLimit(limit)
+      .build()
+    messagesRequest.fetchPrevious().then(
+      messages => {
+        const textMessages = messages.filter(msg => msg.type === 'text')
+          .this.setState({ messages: [...textMessages] })
+        this.scrollToBottom()
+      },
+      error => {
+        console.log('Message fetching failed with error', error);
+      }
+    )
+  }
+
+  scrollToBottom = () => {
+    const page = document.querySelector('.page')
+    page.ScrollTop = page.scrollHeight
+  }
+
+  handleChange = e => {
+    this.setState({ messageText: e.target.value })
+  }
+
+  sendMessage = e => {
+    e.preventDefault()
+    const { receiverID, messageText, messageType, receiverType } = this.state
+    const textMessage = new CometChat.TextMessageMessage(
+      receiverID,
+      messageText,
+      messageType,
+      receiverType
+    )
+    CometChat.sendMessage(textMessage).then(
+      message => {
+        this.setState({ messageText: '' })
+        const oldMessages = [...this.state.messages]
+        const filtered = oldMessages.filter(msg => msg.id !== message)
+        this.setState({ messages: [...filtered, message] })
+        this.scrollToBottom()
+      },
+      error => {
+        console.log('Message sending failed with error:', error);
+
+      }
+    )
+  }
+
+  receiveMessages = () => {
+    const listenerID = 'superGroup'
+    CometChat.addMessageListener(
+      listenerID,
+      new CometChat.MessageListener({
+        onTextMessageReceived: textMessage => {
+          const oldMessages = this.state.messages
+          oldMessages.push(textMessage)
+          this.setState({
+            messages: [...oldMessages]
+          },
+            () => this.scrollToBottom()
+          )
+        }
+      })
+    )
+  }
+
+  logout = () => {
+    CometChat.logout().then(() => {
+      localStorage.removeItem('cometchat:authToken')
+      this.setState({ redirect: true })
+    })
+  }
+
   render() {
     if (this.state.redirect) return <Redirect to='/'></Redirect>
     return (
