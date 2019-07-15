@@ -67,7 +67,7 @@ class Chat extends React.Component {
   fetchMessages = () => {
     const GUID = this.state.receiverID
     const limit = 30
-    const messageRequest = new CometChat.MessagesRequestBuilder()
+    const messagesRequest = new CometChat.MessagesRequestBuilder()
       .setGUID(GUID)
       .setLimit(limit)
       .build()

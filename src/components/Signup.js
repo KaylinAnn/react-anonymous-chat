@@ -26,7 +26,7 @@ class Signup extends React.Component {
       const uid = e.target.value
       if (uid.indexOf(' ') > 0) {
         this.setState({
-          UIDError: 'Username cannot contain whit space'
+          UIDError: 'Username cannot contain white space'
         },
           () => {
             console.log(this.state.UIDError);
@@ -43,18 +43,15 @@ class Signup extends React.Component {
     e.preventDefault()
     const { uid, name, email } = this.state
     this.setState({ uid: '', name: '', email: '', isLoading: true })
-    fetch('https://api.cometchat.com/v1/users', {
+    fetch("https://api.cometchat.com/v1.8/users", {
       method: 'POST',
       headers: {
+        accept: 'application/json',
         'Content-Type': 'application/json',
         appid: process.env.REACT_APP_COMETCHAT_APPID,
         apikey: process.env.REACT_APP_COMETCHAT_APIKEY
       },
-      body: JSON.stringify({
-        uid,
-        name,
-        email
-      })
+      body: `{"metadata": {${uid}, ${name}, ${email}}}`
     })
       .then(res => res.json())
       .then(data => {
@@ -68,7 +65,7 @@ class Signup extends React.Component {
               this.showErrors()
             }
           )
-          return
+          return;
         }
         this.setState({
           isLoading: false,
@@ -138,7 +135,7 @@ class Signup extends React.Component {
                   name='name'
                   value={this.state.name}
                   placeholder='What is your name?'
-                  onchange={this.handleChange}
+                  onChange={this.handleChange}
                 ></Form.Control>
               </Form.Group>
               <Form.Group controlId='email'>
