@@ -20,7 +20,7 @@ class Chat extends React.Component {
       messages: [],
       authToken: null,
       messageType: CometChat.MESSAGE_TYPE.TEXT,
-      receiverType: CometChat.RECEIVER_TPYE.GROUP
+      receiverType: CometChat.RECEIVER_TYPE.GROUP
     }
   }
 
@@ -95,7 +95,7 @@ class Chat extends React.Component {
   sendMessage = e => {
     e.preventDefault()
     const { receiverID, messageText, messageType, receiverType } = this.state
-    const textMessage = new CometChat.TextMessageMessage(
+    const textMessage = new CometChat.TextMessage(
       receiverID,
       messageText,
       messageType,
