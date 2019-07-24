@@ -45,6 +45,7 @@ class Signup extends React.Component {
     console.log(uid, name, email);
 
     this.setState({ uid: '', name: '', email: '', isLoading: true })
+
     fetch("https://api.cometchat.com/v1.8/users", {
       method: 'POST',
       headers: {
