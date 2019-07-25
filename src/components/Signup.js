@@ -46,6 +46,24 @@ class Signup extends React.Component {
 
     this.setState({ uid: '', name: '', email: '', isLoading: true })
 
+    //Change this request to axios post and install axios
+
+    // axios.post('https://api.cometchat.com/v1.8/users', {
+    //   headers: {
+    //     accept: 'application/json',
+    //     'Content-Type': 'application/json',
+    //     appid: process.env.REACT_APP_COMETCHAT_APPID,
+    //     apikey: process.env.REACT_APP_COMETCHAT_APIKEY
+    //   },
+    //   body: `{"metadata": {${uid}, ${name}, ${email}}}`
+    // })
+    //   .then(function (response) {
+    //     console.log(response);
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   });
+
     fetch("https://api.cometchat.com/v1.8/users", {
       method: 'POST',
       headers: {
